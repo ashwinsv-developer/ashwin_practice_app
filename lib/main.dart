@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:ashwin_practice_app/bloc/a/bloc/a_bloc.dart';
 import 'package:ashwin_practice_app/model/list_item_data.dart';
+import 'package:ashwin_practice_app/route/generatedRoute.dart';
 import 'package:ashwin_practice_app/utills/constants.dart';
 import 'package:ashwin_practice_app/widgets/bottom_navigation_widget.dart';
 import 'package:ashwin_practice_app/widgets/dashboard_widget.dart';
@@ -8,10 +9,22 @@ import 'package:ashwin_practice_app/widgets/home_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'model/bottom_navi_data.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main()  async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: FirebaseOptions(
+    apiKey: 'key',
+    appId: 'id',
+    messagingSenderId: 'sendid',
+    projectId: 'myapp',
+    storageBucket: 'myapp-b9yt18.appspot.com',
+  ));
+  // await PushNotificationService().initialize();
+  // await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -22,11 +35,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
+      initialRoute: "/login",
+      onGenerateRoute: GenerateRoute.generateRoute,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: false,
       ),
-      home: const MyHomePage(title: 'Stock Application'),
     );
   }
 }
@@ -34,6 +48,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
+  static const String screenName= "homePage";
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -87,6 +102,13 @@ class _MyHomePageState extends State<MyHomePage> {
         isSelected: false,
         position: 4),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    // registerNotification();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,4 +165,72 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  // void registerNotification() async {
+  //
+  //   await Firebase.initializeApp();
+  //   _messaging = FirebaseMessaging.instance;
+  //
+  //   fetchRemoteConfigData();
+  //   NotificationSettings settings = await _messaging.requestPermission(
+  //     alert: true,
+  //     badge: true,
+  //     provisional: false,
+  //     sound: true,
+  //   );
+  //   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+  //     print('User granted permission');
+  //
+  //     // Add the following line
+  //     // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  //     getToken();
+  //     // For handling the received notifications
+  //     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //       print("message $message");
+  //       // Parse the message received
+  //       PushNotification notification = PushNotification(
+  //         title: message.notification?.title,
+  //         body: message.notification?.body,
+  //       );
+  //       getToken();
+  //
+  //
+  //       // setState(() {
+  //       //   _notificationInfo = notification;
+  //       //   _totalNotifications++;
+  //       // });
+  //     });
+  //   } else {
+  //     print('User declined or has not accepted permission');
+  //   }
+  // }
+
+  // Future<String?> getToken() async {
+  //   String? token = await _messaging.getToken();
+  //   print('Token: $token');
+  //   return token;
+  // }
+
+  // Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  //   print("Handling a background message: ${message.messageId}");
+  // }
+
+  // Future<void >fetchRemoteConfigData()async{
+  //   final remoteConfig = FirebaseRemoteConfig.instance;
+  //   await remoteConfig.setConfigSettings(RemoteConfigSettings(
+  //     fetchTimeout: const Duration(minutes: 1),
+  //     minimumFetchInterval: const Duration(hours: 1),
+  //   ));
+  // }
+
+
+}
+
+class PushNotification {
+  PushNotification({
+    this.title,
+    this.body,
+  });
+  String? title;
+  String? body;
 }

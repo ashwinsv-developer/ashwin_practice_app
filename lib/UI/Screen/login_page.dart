@@ -1,3 +1,4 @@
+import 'package:ashwin_practice_app/WorkManager/WorkmanagerUtils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,8 @@ class _LoginWidget extends State<LoginPage> with RouteAware {
                         ),
                         TextButton(
                             onPressed: () {
+                              WorkManagerUtils().callBackgroundTask({"data":"onetime Task pressed"} as Map<String, dynamic>, "oneTimeTask");
+                               WorkManagerUtils().callPeriodicTask(15,{"data":"onetime Task pressed"} as Map<String, dynamic>, "OnPressOneTimeTask");
                               FirebaseAuth.instance
                                   .createUserWithEmailAndPassword(
                                       email: usernameController.text,

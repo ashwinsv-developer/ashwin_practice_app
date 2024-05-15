@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:ashwin_practice_app/WorkManager/WorkmanagerUtils.dart';
 import 'package:ashwin_practice_app/bloc/bloc/bottom_nav_bloc.dart';
 import 'package:ashwin_practice_app/model/list_item_data.dart';
 import 'package:ashwin_practice_app/route/generatedRoute.dart';
@@ -8,6 +9,7 @@ import 'package:ashwin_practice_app/widgets/dashboard_widget.dart';
 import 'package:ashwin_practice_app/widgets/home_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:workmanager/workmanager.dart';
 import 'model/bottom_navi_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -22,7 +24,26 @@ Future<void> main()  async{
   ));
   // await PushNotificationService().initialize();
   // await Firebase.initializeApp();
+  await  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: true,
+  );
   runApp(const MyApp());
+}
+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    switch (task) {
+      case "oneTimeTask":
+        debugPrint("Normal task is getting execurted  ${inputData} ");
+        break;
+
+      case "simplePeriodicTask":
+        debugPrint("Timing interval task is getting execurted  ${inputData} ");
+        break;
+    }
+    return Future.value(true);
+  });
 }
 
 
@@ -55,6 +76,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+@override
+void initState() {
+  super.initState();
+}
+
   List<ListItemData> itemData = [
     ListItemData(
         name: "GOLD",
@@ -102,14 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
         isSelected: false,
         position: 4),
   ];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    // registerNotification();
-    super.initState();
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,63 +185,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-  // void registerNotification() async {
-  //
-  //   await Firebase.initializeApp();
-  //   _messaging = FirebaseMessaging.instance;
-  //
-  //   fetchRemoteConfigData();
-  //   NotificationSettings settings = await _messaging.requestPermission(
-  //     alert: true,
-  //     badge: true,
-  //     provisional: false,
-  //     sound: true,
-  //   );
-  //   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-  //     print('User granted permission');
-  //
-  //     // Add the following line
-  //     // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  //     getToken();
-  //     // For handling the received notifications
-  //     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //       print("message $message");
-  //       // Parse the message received
-  //       PushNotification notification = PushNotification(
-  //         title: message.notification?.title,
-  //         body: message.notification?.body,
-  //       );
-  //       getToken();
-  //
-  //
-  //       // setState(() {
-  //       //   _notificationInfo = notification;
-  //       //   _totalNotifications++;
-  //       // });
-  //     });
-  //   } else {
-  //     print('User declined or has not accepted permission');
-  //   }
-  // }
-
-  // Future<String?> getToken() async {
-  //   String? token = await _messaging.getToken();
-  //   print('Token: $token');
-  //   return token;
-  // }
-
-  // Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  //   print("Handling a background message: ${message.messageId}");
-  // }
-
-  // Future<void >fetchRemoteConfigData()async{
-  //   final remoteConfig = FirebaseRemoteConfig.instance;
-  //   await remoteConfig.setConfigSettings(RemoteConfigSettings(
-  //     fetchTimeout: const Duration(minutes: 1),
-  //     minimumFetchInterval: const Duration(hours: 1),
-  //   ));
-  // }
 
 
 }

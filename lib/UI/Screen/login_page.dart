@@ -2,6 +2,7 @@ import 'package:ashwin_practice_app/WorkManager/WorkmanagerUtils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../database/dataBaseHelper.dart';
 
 class LoginPage extends StatefulWidget {
   static const String screenName = "login";
@@ -13,6 +14,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginWidget extends State<LoginPage> with RouteAware {
+  final dbHelper = DatabaseHelper.instance;
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -20,6 +22,13 @@ class _LoginWidget extends State<LoginPage> with RouteAware {
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  void _query() async {
+    final allRows = await dbHelper.getUserData();
+    print('query all rows:');
+    allRows.forEach(print);
+
   }
 
   @override
@@ -78,17 +87,16 @@ class _LoginWidget extends State<LoginPage> with RouteAware {
                             onPressed: () {
                               WorkManagerUtils().callBackgroundTask({"data":"onetime Task pressed"} as Map<String, dynamic>, "oneTimeTask");
                                WorkManagerUtils().callPeriodicTask(15,{"data":"onetime Task pressed"} as Map<String, dynamic>, "OnPressOneTimeTask");
-                              FirebaseAuth.instance
-                                  .createUserWithEmailAndPassword(
-                                      email: usernameController.text,
-                                      password: passwordController.text)
-                                  .then((value) {
-                                print("Created New Account");
+
+                              if(passwordController.text.isNotEmpty&& usernameController.text.isNotEmpty){
+                                dbHelper.insertUserData({
+                                  DatabaseHelper.userId:usernameController.text,
+                                  DatabaseHelper.userName:passwordController.text
+                                });
+                                _query();
                                 Navigator.of(context).pushNamed("/home");
-                              }).onError((error, stackTrace) {
-                                print("Error ${error.toString()}");
-                              });
-                              Navigator.of(context).pushNamed("/home");
+                              }
+
                             },
                             child: Text("login")),
 

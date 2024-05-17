@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:ashwin_practice_app/WorkManager/WorkmanagerUtils.dart';
 import 'package:ashwin_practice_app/bloc/bloc/bottom_nav_bloc.dart';
 import 'package:ashwin_practice_app/model/list_item_data.dart';
 import 'package:ashwin_practice_app/route/generatedRoute.dart';
@@ -22,8 +21,6 @@ Future<void> main()  async{
     projectId: 'myapp',
     storageBucket: 'myapp-b9yt18.appspot.com',
   ));
-  // await PushNotificationService().initialize();
-  // await Firebase.initializeApp();
   await  Workmanager().initialize(
     callbackDispatcher,
     isInDebugMode: true,

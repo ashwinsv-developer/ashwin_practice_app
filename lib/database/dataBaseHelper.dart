@@ -49,13 +49,32 @@ class DatabaseHelper {
             $userName TEXT NOT NULL 
           )
           ''');
+  }
 
+  Future<int> getUserCount() async {
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM $userNamePassword')) ??
+        0;
+  }
+
+  Future<int> update(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    int id = row[userId];
+    return await db.update(userNamePassword, row, where: '$userId = ?', whereArgs: [id]);
   }
 
   Future<int>  insertUserData(Map<String, dynamic> row) async {
     Database? db = await instance.database;
     return await db.insert(userNamePassword, row);
   }
+
+  Future <int> deleteuSERlIST () async{
+    Database? db = await instance.database;
+    return await db.delete(userNamePassword);
+  }
+
+
 
   Future<List<Map<String, dynamic>>> getUserData() async {
     Database db = await instance.database;
